@@ -17,12 +17,16 @@ const STATUS_LABELS: Record<NonNullable<Project["status"]>, string> = {
 const FEATURED_SHOWCASE = [
   {
     title: "研报整理流水线：PDF→Markdown→结构化结论库",
+    image1: "/featured/report-1.png",
     text1: "文字解释占位符1",
+    image2: "/featured/report-2.png",
     text2: "文字解释占位符2"
   },
   {
     title: "德州扑克记牌器：局域网筹码与底池管理",
+    image1: "/featured/chips-1.png",
     text1: "文字解释占位符1",
+    image2: "/featured/chips-2.png",
     text2: "文字解释占位符2"
   }
 ] as const;
@@ -80,11 +84,15 @@ function SkeletonLines({ rows }: { rows: number }) {
 
 function FeaturedShowcaseCard({
   title,
+  image1,
   text1,
+  image2,
   text2
 }: {
   title: string;
+  image1: string;
   text1: string;
+  image2: string;
   text2: string;
 }) {
   return (
@@ -93,7 +101,12 @@ function FeaturedShowcaseCard({
 
       <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
         <p className="text-xs font-semibold uppercase tracking-wide text-white/70">图片占位符1</p>
-        <div className="mt-2 h-48 rounded-lg border border-dashed border-white/20 bg-white/[0.03]" />
+        <img
+          src={image1}
+          alt={`${title} 图片 1`}
+          className="mt-2 h-48 w-full rounded-lg border border-white/10 object-cover"
+          loading="lazy"
+        />
       </section>
 
       <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
@@ -103,7 +116,12 @@ function FeaturedShowcaseCard({
 
       <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
         <p className="text-xs font-semibold uppercase tracking-wide text-white/70">图片占位符2</p>
-        <div className="mt-2 h-48 rounded-lg border border-dashed border-white/20 bg-white/[0.03]" />
+        <img
+          src={image2}
+          alt={`${title} 图片 2`}
+          className="mt-2 h-48 w-full rounded-lg border border-white/10 object-cover"
+          loading="lazy"
+        />
       </section>
 
       <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
@@ -360,7 +378,14 @@ export default function Page() {
 
         <div className="flex flex-col gap-5">
           {FEATURED_SHOWCASE.map((card) => (
-            <FeaturedShowcaseCard key={card.title} title={card.title} text1={card.text1} text2={card.text2} />
+            <FeaturedShowcaseCard
+              key={card.title}
+              title={card.title}
+              image1={card.image1}
+              text1={card.text1}
+              image2={card.image2}
+              text2={card.text2}
+            />
           ))}
         </div>
       </section>
