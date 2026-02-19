@@ -1,7 +1,7 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useMemo, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { moduleUniverse, projects, tagUniverse, type Project } from "./projects";
 
 const MODULE_LABELS: Record<Project["module"], string> = {
@@ -13,6 +13,19 @@ const STATUS_LABELS: Record<NonNullable<Project["status"]>, string> = {
   Ready: "已就绪",
   WIP: "进行中"
 };
+
+const FEATURED_SHOWCASE = [
+  {
+    title: "研报整理流水线：PDF→Markdown→结构化结论库",
+    text1: "文字解释占位符1",
+    text2: "文字解释占位符2"
+  },
+  {
+    title: "德州扑克记牌器：局域网筹码与底池管理",
+    text1: "文字解释占位符1",
+    text2: "文字解释占位符2"
+  }
+] as const;
 
 function cx(...xs: Array<string | null | undefined | false>) {
   return xs.filter((x): x is string => typeof x === "string" && x.length > 0).join(" ");
@@ -65,43 +78,64 @@ function SkeletonLines({ rows }: { rows: number }) {
   );
 }
 
+function FeaturedShowcaseCard({
+  title,
+  text1,
+  text2
+}: {
+  title: string;
+  text1: string;
+  text2: string;
+}) {
+  return (
+    <article className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.03] p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
+      <h3 className="text-lg font-semibold tracking-tight text-white">{title}</h3>
+
+      <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
+        <p className="text-xs font-semibold uppercase tracking-wide text-white/70">图片占位符1</p>
+        <div className="mt-2 h-48 rounded-lg border border-dashed border-white/20 bg-white/[0.03]" />
+      </section>
+
+      <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
+        <p className="text-xs font-semibold uppercase tracking-wide text-white/70">文字解释占位符1</p>
+        <p className="mt-2 text-sm leading-6 text-white/75">{text1}</p>
+      </section>
+
+      <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
+        <p className="text-xs font-semibold uppercase tracking-wide text-white/70">图片占位符2</p>
+        <div className="mt-2 h-48 rounded-lg border border-dashed border-white/20 bg-white/[0.03]" />
+      </section>
+
+      <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
+        <p className="text-xs font-semibold uppercase tracking-wide text-white/70">文字解释占位符2</p>
+        <p className="mt-2 text-sm leading-6 text-white/75">{text2}</p>
+      </section>
+    </article>
+  );
+}
+
 function ProjectCard({
   p,
   index,
-  onOpen,
   featured
 }: {
   p: Project;
   index: number;
-  onOpen: (id: string) => void;
   featured?: boolean;
 }) {
   const reduceMotion = useReducedMotion();
   const title = p.title.trim().length > 0 ? p.title : "（待补充）";
   const subtitle = p.subtitle.trim();
   const description = p.description.trim();
-  const featureHighlights = (p.proofPoints ?? [])
-    .map((item) => item.trim())
-    .filter((item) => item.length > 0)
-    .slice(0, 2);
-  const proof = featureHighlights[0] ?? "";
+  const proof = (p.proofPoints ?? []).map((item) => item.trim()).find((item) => item.length > 0) ?? "";
 
   return (
     <motion.article
       initial={reduceMotion ? false : { opacity: 0, y: 10 }}
       animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
       transition={reduceMotion ? undefined : { duration: 0.35, delay: index * 0.03 }}
-      role="button"
-      tabIndex={0}
-      onClick={() => onOpen(p.id)}
-      onKeyDown={(event) => {
-        if (event.key === "Enter") {
-          event.preventDefault();
-          onOpen(p.id);
-        }
-      }}
       className={cx(
-        "group cursor-pointer rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.03] p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.02)] transition hover:border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30",
+        "group rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.03] p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.02)] transition hover:border-white/20",
         featured ? "min-h-[430px]" : "min-h-[380px]"
       )}
     >
@@ -123,415 +157,142 @@ function ProjectCard({
         )}
       </header>
 
-      {featured ? (
-        <>
-          <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">项目简介</h3>
-            {description ? (
-              <p className="mt-2 text-sm leading-6 text-white/80">{description}</p>
-            ) : (
-              <div className="mt-2">
-                <SkeletonLines rows={4} />
-              </div>
-            )}
-          </section>
+      <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">证据要点</h3>
+        {proof ? (
+          <p className="mt-2 text-sm leading-6 text-white/80">{proof}</p>
+        ) : (
+          <Skeleton className="mt-2 h-3 w-full" />
+        )}
+      </section>
 
-          <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">面试看点</h3>
-            {featureHighlights.length > 0 ? (
-              <ul className="mt-2 space-y-2 text-sm leading-6 text-white/80">
-                {featureHighlights.map((item) => (
-                  <li key={`${p.id}-${item}`}>{item}</li>
+      {description ? (
+        <p className="mt-4 text-sm leading-6 text-white/75">{description}</p>
+      ) : (
+        <div className="mt-4 space-y-2">
+          <Skeleton className="h-3 w-full" />
+          <Skeleton className="h-3 w-10/12" />
+        </div>
+      )}
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        {p.tags.slice(0, 8).map((t) => (
+          <span
+            key={t}
+            className="rounded-full bg-white/5 px-2.5 py-1 text-xs text-white/60 ring-1 ring-inset ring-white/10"
+          >
+            {t}
+          </span>
+        ))}
+      </div>
+
+      <div className="mt-5">
+        <div className="grid gap-4 md:grid-cols-2">
+          <section className="rounded-xl border border-white/10 bg-black/20 p-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">我做了什么</h3>
+            {p.coreSkills.length > 0 ? (
+              <ul className="mt-3 space-y-2 text-sm text-white/75">
+                {p.coreSkills.slice(0, 4).map((skill, idx) => (
+                  <li key={`${p.id}-skill-${idx}`} className="leading-6">
+                    {skill}
+                  </li>
                 ))}
               </ul>
             ) : (
-              <div className="mt-2">
-                <SkeletonLines rows={2} />
+              <div className="mt-3">
+                <SkeletonLines rows={3} />
               </div>
             )}
           </section>
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            {p.tags.slice(0, 8).map((t) => (
-              <span
-                key={t}
-                className="rounded-full bg-white/5 px-2.5 py-1 text-xs text-white/60 ring-1 ring-inset ring-white/10"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        </>
-      ) : (
-        <>
-          <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">证据要点</h3>
-            {proof ? (
-              <p className="mt-2 text-sm leading-6 text-white/80">{proof}</p>
+          <section className="rounded-xl border border-white/10 bg-black/20 p-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">评估方式（如何衡量）</h3>
+            {p.suggestedMetrics.length > 0 ? (
+              <ul className="mt-3 space-y-2 text-sm text-white/75">
+                {p.suggestedMetrics.slice(0, 4).map((metric, idx) => (
+                  <li key={`${p.id}-metric-${idx}`} className="leading-6">
+                    {metric}
+                  </li>
+                ))}
+              </ul>
             ) : (
-              <Skeleton className="mt-2 h-3 w-full" />
+              <div className="mt-3">
+                <SkeletonLines rows={3} />
+              </div>
             )}
           </section>
+        </div>
 
-          {description ? (
-            <p className="mt-4 text-sm leading-6 text-white/75">{description}</p>
+        <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">证据链接</h3>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {p.evidence.length > 0
+              ? p.evidence.map((item, idx) => (
+                  <a
+                    key={`${p.id}-evidence-${idx}`}
+                    href={item.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/80 transition hover:border-white/20 hover:bg-white/10"
+                  >
+                    {item.label}
+                  </a>
+                ))
+              : Array.from({ length: 2 }).map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    disabled
+                    className="inline-flex cursor-not-allowed items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 opacity-70"
+                  >
+                    <Skeleton className="h-3 w-20" />
+                  </button>
+                ))}
+          </div>
+        </section>
+
+        <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">交付物</h3>
+          {p.deliverables.length > 0 ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {p.deliverables.map((item, idx) => (
+                <span
+                  key={`${p.id}-deliverable-${idx}`}
+                  className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs text-white/70"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
           ) : (
-            <div className="mt-4 space-y-2">
-              <Skeleton className="h-3 w-full" />
-              <Skeleton className="h-3 w-10/12" />
+            <div className="mt-3 flex flex-wrap gap-2">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 opacity-70"
+                >
+                  <Skeleton className="h-3 w-20" />
+                </span>
+              ))}
             </div>
           )}
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            {p.tags.slice(0, 8).map((t) => (
-              <span
-                key={t}
-                className="rounded-full bg-white/5 px-2.5 py-1 text-xs text-white/60 ring-1 ring-inset ring-white/10"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-
-          <div className="mt-5">
-            <div className="grid gap-4 md:grid-cols-2">
-              <section className="rounded-xl border border-white/10 bg-black/20 p-4">
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">我做了什么</h3>
-                {p.coreSkills.length > 0 ? (
-                  <ul className="mt-3 space-y-2 text-sm text-white/75">
-                    {p.coreSkills.slice(0, 4).map((skill, idx) => (
-                      <li key={`${p.id}-skill-${idx}`} className="leading-6">
-                        {skill}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="mt-3">
-                    <SkeletonLines rows={3} />
-                  </div>
-                )}
-              </section>
-
-              <section className="rounded-xl border border-white/10 bg-black/20 p-4">
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">
-                  评估方式（如何衡量）
-                </h3>
-                {p.suggestedMetrics.length > 0 ? (
-                  <ul className="mt-3 space-y-2 text-sm text-white/75">
-                    {p.suggestedMetrics.slice(0, 4).map((metric, idx) => (
-                      <li key={`${p.id}-metric-${idx}`} className="leading-6">
-                        {metric}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="mt-3">
-                    <SkeletonLines rows={3} />
-                  </div>
-                )}
-              </section>
-            </div>
-
-            <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">证据链接</h3>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {p.evidence.length > 0
-                  ? p.evidence.map((item, idx) => (
-                      <a
-                        key={`${p.id}-evidence-${idx}`}
-                        href={item.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/80 transition hover:border-white/20 hover:bg-white/10"
-                      >
-                        {item.label}
-                      </a>
-                    ))
-                  : Array.from({ length: 2 }).map((_, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        disabled
-                        className="inline-flex cursor-not-allowed items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 opacity-70"
-                      >
-                        <Skeleton className="h-3 w-20" />
-                      </button>
-                    ))}
-              </div>
-            </section>
-
-            <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">交付物</h3>
-              {p.deliverables.length > 0 ? (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {p.deliverables.map((item, idx) => (
-                    <span
-                      key={`${p.id}-deliverable-${idx}`}
-                      className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs text-white/70"
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {Array.from({ length: 2 }).map((_, i) => (
-                    <span
-                      key={i}
-                      className="inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 opacity-70"
-                    >
-                      <Skeleton className="h-3 w-20" />
-                    </span>
-                  ))}
-                </div>
-              )}
-            </section>
-          </div>
-        </>
-      )}
-    </motion.article>
-  );
-}
-
-function FeaturedPlaceholderCard({ index, onOpen }: { index: number; onOpen: (id: string) => void }) {
-  const reduceMotion = useReducedMotion();
-
-  return (
-    <motion.article
-      initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-      animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-      transition={reduceMotion ? undefined : { duration: 0.35, delay: index * 0.03 }}
-      role="button"
-      tabIndex={0}
-      onClick={() => onOpen(`__featured_placeholder_${index}`)}
-      onKeyDown={(event) => {
-        if (event.key === "Enter") {
-          event.preventDefault();
-          onOpen(`__featured_placeholder_${index}`);
-        }
-      }}
-      className="group min-h-[430px] cursor-pointer rounded-2xl border border-dashed border-white/20 bg-white/[0.03] p-5 transition hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/30"
-    >
-      <div className="flex flex-wrap gap-2">
-        <Badge>置顶</Badge>
-        <Badge>占位</Badge>
-      </div>
-      <div className="mt-4 space-y-3">
-        <Skeleton className="h-6 w-40" />
-        <Skeleton className="h-3 w-11/12" />
-      </div>
-
-      <section className="mt-5 rounded-xl border border-white/10 bg-black/20 p-4">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">项目简介</h3>
-        <div className="mt-2">
-          <SkeletonLines rows={4} />
-        </div>
-      </section>
-
-      <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">面试看点</h3>
-        <div className="mt-2">
-          <SkeletonLines rows={2} />
-        </div>
-      </section>
-
-      <div className="mt-4 flex flex-wrap gap-2">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-6 w-16 rounded-full" />
-        ))}
+        </section>
       </div>
     </motion.article>
-  );
-}
-
-function DrawerSection({
-  label,
-  rows,
-  text,
-  items
-}: {
-  label: string;
-  rows: number;
-  text?: string;
-  items?: string[];
-}) {
-  const hasText = Boolean(text && text.trim().length > 0);
-  const hasItems = Boolean(items && items.length > 0);
-
-  return (
-    <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-      <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">{label}</h3>
-      {hasText ? (
-        <p className="mt-3 text-sm leading-6 text-white/75">{text}</p>
-      ) : hasItems ? (
-        <ul className="mt-3 space-y-2 text-sm leading-6 text-white/75">
-          {items?.map((item, idx) => (
-            <li key={`${label}-${idx}`}>{item}</li>
-          ))}
-        </ul>
-      ) : (
-        <div className="mt-3">
-          <SkeletonLines rows={rows} />
-        </div>
-      )}
-    </section>
-  );
-}
-
-function ProjectDrawer({
-  open,
-  project,
-  onClose
-}: {
-  open: boolean;
-  project: Project | null;
-  onClose: () => void;
-}) {
-  const reduceMotion = useReducedMotion();
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [open, onClose]);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [open]);
-
-  const sectionData = project?.sections;
-  const drawerEvidence = sectionData?.evidence ?? [];
-
-  return (
-    <AnimatePresence>
-      {open ? (
-        <>
-          <motion.button
-            type="button"
-            aria-label="关闭抽屉"
-            onClick={onClose}
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={reduceMotion ? undefined : { opacity: 1 }}
-            exit={reduceMotion ? undefined : { opacity: 0 }}
-            transition={reduceMotion ? undefined : { duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-black/70 backdrop-blur-[1px]"
-          />
-
-          <motion.aside
-            initial={reduceMotion ? false : { x: "100%" }}
-            animate={reduceMotion ? undefined : { x: 0 }}
-            exit={reduceMotion ? undefined : { x: "100%" }}
-            transition={reduceMotion ? undefined : { duration: 0.28, ease: "easeOut" }}
-            className="fixed inset-y-0 right-0 z-50 w-full border-l border-white/10 bg-black sm:w-[560px] md:w-[620px]"
-          >
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-black/95 px-5 py-4">
-              <Badge>{project?.id ?? "未知"}</Badge>
-              <button
-                type="button"
-                onClick={onClose}
-                className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80 transition hover:border-white/20 hover:bg-white/10"
-              >
-                关闭
-              </button>
-            </div>
-
-            <div className="h-[calc(100%-65px)] space-y-4 overflow-y-auto p-5">
-              <DrawerSection label="目标" rows={3} text={sectionData?.goal} />
-              <DrawerSection label="流程/架构" rows={5} items={sectionData?.pipeline} />
-              <DrawerSection label="难点" rows={4} items={sectionData?.hardProblems} />
-              <DrawerSection label="结果" rows={3} items={sectionData?.outcomes} />
-              <DrawerSection label="复现" rows={4} items={sectionData?.repro} />
-
-              <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">证据链接</h3>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {drawerEvidence.length > 0
-                    ? drawerEvidence.map((item, idx) => (
-                        <a
-                          key={`drawer-evidence-${idx}`}
-                          href={item.href}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/80 transition hover:border-white/20 hover:bg-white/10"
-                        >
-                          {item.label}
-                        </a>
-                      ))
-                    : Array.from({ length: 3 }).map((_, i) => (
-                        <button
-                          key={i}
-                          type="button"
-                          disabled
-                          className="inline-flex cursor-not-allowed items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 opacity-70"
-                        >
-                          <Skeleton className="h-3 w-24" />
-                        </button>
-                      ))}
-                </div>
-              </section>
-            </div>
-          </motion.aside>
-        </>
-      ) : null}
-    </AnimatePresence>
   );
 }
 
 export default function Page() {
   const [activeModule, setActiveModule] = useState<string>("All");
   const [activeTag, setActiveTag] = useState<string>("All");
-  const [query, setQuery] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  const featuredProjects = useMemo(
-    () =>
-      projects
-        .filter((p) => typeof p.featuredRank === "number")
-        .sort((a, b) => (a.featuredRank ?? Number.MAX_SAFE_INTEGER) - (b.featuredRank ?? Number.MAX_SAFE_INTEGER))
-        .slice(0, 2),
-    []
-  );
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-
     return projects.filter((p) => {
       const okModule = activeModule === "All" ? true : p.module === activeModule;
       const okTag = activeTag === "All" ? true : p.tags.includes(activeTag);
-      const okQuery =
-        q.length === 0
-          ? true
-          : [p.title, p.subtitle, ...p.tags]
-              .join(" ")
-              .toLowerCase()
-              .includes(q);
-
-      return okModule && okTag && okQuery;
+      return okModule && okTag;
     });
-  }, [activeModule, activeTag, query]);
-
-  const selectedProject = useMemo(() => projects.find((p) => p.id === selectedId) ?? null, [selectedId]);
+  }, [activeModule, activeTag]);
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -545,9 +306,7 @@ export default function Page() {
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px]">
             <div>
               <p className="text-xs uppercase tracking-[0.18em] text-white/60">作品集</p>
-              <h1 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">
-                Vibe Coding × AI Diffusion
-              </h1>
+              <h1 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">Vibe Coding × AI Diffusion</h1>
             </div>
 
             <div className="flex flex-wrap content-start gap-2 lg:justify-end">
@@ -572,21 +331,21 @@ export default function Page() {
             <article className="rounded-xl border border-white/10 bg-black/20 p-4">
               <h3 className="text-sm font-semibold text-white">个人能力</h3>
               <p className="mt-2 text-sm leading-6 text-white/75">
-                能在需求不完全明确时快速完成原型搭建、联调与排障，把想法稳定落地为可运行系统。
+                能在需求不完全明确且快速变化的情况下，用“先跑通再收敛”的方式把原型做成可交付系统：前后端联调、接口契约、端口/网络可达性、环境依赖与 GPU 相关问题都能定位解决。对 AI 能力的使用不是停留在调用模型，而是把不稳定的生成过程变成稳定的工作流产物（Schema 约束、分段续写、质检与回放），让效率可以复用到更多场景。
               </p>
             </article>
 
             <article className="rounded-xl border border-white/10 bg-black/20 p-4">
               <h3 className="text-sm font-semibold text-white">作品集简介</h3>
               <p className="mt-2 text-sm leading-6 text-white/75">
-                作品集采用证据优先结构，强调目标、流程、难点、结果与复现路径，便于在面试中快速评估工程能力。
+                作品集坚持证据与可复现优先：每个项目都给出目标、关键设计取舍、踩坑与排障路径、以及可以一键复跑的入口（脚本、notebook、配置与固定依赖）。我不仅展示功能完成，更展示如何把流程标准化、如何做质量控制与边界处理，方便面试官快速评估工程交付能力。
               </p>
             </article>
 
             <article className="rounded-xl border border-white/10 bg-black/20 p-4">
               <h3 className="text-sm font-semibold text-white">希望从事岗位</h3>
               <p className="mt-2 text-sm leading-6 text-white/75">
-                AI 应用工程、AI 工作流工程，或 AI + 全栈产品工程相关岗位，侧重从原型到可交付系统的全流程实现。
+                AI 应用工程、AI 工作流/平台工程、AI 产品策略等岗位。核心诉求是把模型能力嵌入真实业务链路：从本地/私有化部署、提示与结构化输出、到评测与质检闭环，再到前后端集成与上线维护，负责从原型到稳定交付的全流程实现。
               </p>
             </article>
           </div>
@@ -599,14 +358,10 @@ export default function Page() {
           <Skeleton className="h-3 w-24" />
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-2">
-          {featuredProjects.length > 0
-            ? featuredProjects.map((p, i) => (
-                <ProjectCard key={p.id} p={p} index={i} featured onOpen={(id) => setSelectedId(id)} />
-              ))
-            : Array.from({ length: 2 }).map((_, i) => (
-                <FeaturedPlaceholderCard key={i} index={i} onOpen={(id) => setSelectedId(id)} />
-              ))}
+        <div className="flex flex-col gap-5">
+          {FEATURED_SHOWCASE.map((card) => (
+            <FeaturedShowcaseCard key={card.title} title={card.title} text1={card.text1} text2={card.text2} />
+          ))}
         </div>
       </section>
 
@@ -637,24 +392,12 @@ export default function Page() {
               ))}
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <label className="w-full sm:max-w-sm">
-                <span className="mb-1 block text-xs text-white/50">搜索</span>
-                <input
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder=""
-                  className="w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-white/30"
-                  type="search"
-                />
-              </label>
-
+            <div className="flex justify-end">
               <button
                 type="button"
                 onClick={() => {
                   setActiveModule("All");
                   setActiveTag("All");
-                  setQuery("");
                 }}
                 className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/70 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
               >
@@ -674,7 +417,7 @@ export default function Page() {
         {filtered.length > 0 ? (
           <div className="grid gap-5 lg:grid-cols-2">
             {filtered.map((p, i) => (
-              <ProjectCard key={p.id} p={p} index={i} onOpen={(id) => setSelectedId(id)} />
+              <ProjectCard key={p.id} p={p} index={i} />
             ))}
           </div>
         ) : (
@@ -684,8 +427,6 @@ export default function Page() {
           </div>
         )}
       </section>
-
-      <ProjectDrawer open={selectedId !== null} project={selectedProject} onClose={() => setSelectedId(null)} />
     </main>
   );
 }
