@@ -40,7 +40,7 @@ export const projects: Project[] = [
   title: "Whisper 本地转写：批量 ASR + 提示词/主题确认",
   subtitle: "GPU/CPU 自动切换；目录批处理；prompt.txt 约束术语与上下文",
   description:
-    "把 Whisper 做成可在 Windows 本地稳定跑的批量转写工具：输入为一个音频目录（m4a/wav/mp3/flac/ogg），输出为同名 txt 文件落盘。脚本会先检查 CUDA 可用性并选择设备（cuda/cpu），模型只加载一次然后批量处理所有文件；同时支持从 prompt.txt 读取‘主题/术语/人名’等上下文提示，保证转写更贴近会议/研究场景，并在每次批处理前显式确认 prompt 是否加载成功（便于面试时解释“如何用提示词把模型对齐到具体业务主题”）。",
+    "把 Whisper 落地为本地稳定跑的批量转写工具：输入为一个音频目录（m4a/wav/mp3/flac/ogg），输出为同名 txt 文件落盘。脚本会先检查 CUDA 可用性并选择设备（cuda/cpu），模型只加载一次然后批量处理所有文件；同时支持从 prompt.txt 读取‘主题/术语/人名’等上下文提示，保证转写更贴近会议/研究场景，并在每次批处理前显式确认 prompt 是否加载成功（便于面试时解释“如何用提示词把模型对齐到具体业务主题”）。",
   coreSkills: [
     "本地可用性：GPU 可用则 fp16 加速，否则自动回退 CPU（无需改代码）",
     "批处理工程化：目录扫描 + 统一输出目录 + 单次加载模型，减少重复开销",
@@ -48,13 +48,13 @@ export const projects: Project[] = [
     "可观测性：每文件进度、耗时、失败捕获与落盘路径打印，便于排障与复盘"
   ],
   evidence: [
-    { label: "Notebook（本地文件，可提供）", href: "#" },
+    { label: "完整代码GitHub链接", href: "https://github.com/Haibo114Luo/whisper_landing/blob/main/code/test.ipynb" },
     { label: "Whisper 开源实现（所用库）", href: "https://github.com/openai/whisper" }
   ],
   suggestedMetrics: [
-    "主题一致性：同一主题/术语在转写中的命中率（人工抽样）",
-    "稳定性：批处理失败率与可定位错误日志比例（%）",
-    "效率：单条音频转写耗时 / 音频时长（RTF，越低越好）"
+    "主题一致性：经过多次检验，转写文本与录音文本的内容相当一致",
+    "稳定性：即便在录音质量不佳时，也能成功转写并输出（失败率低）",
+    "效率：单条音频转写耗时较短，多个音频批处理并无性能退化"
   ],
   deliverables: [
     "批量转写脚本（目录→txt 落盘）",
@@ -79,18 +79,16 @@ export const projects: Project[] = [
     "工程可控性：关闭非必要组件初始化、静音 warning/debug，保证流水线输出可读可用"
   ],
   evidence: [
-    { label: "环境与排障记录（本地文件，可提供）", href: "#" },
+    { label: "环境与排障记录（根据记忆生成）", href: "https://github.com/Haibo114Luo/Report_note_generation/blob/main/record.md" },
     { label: "PaddleOCR 开源实现（所用框架）", href: "https://github.com/PaddlePaddle/PaddleOCR" }
   ],
   suggestedMetrics: [
-    "可复现性：新机器/新环境按步骤复装一次成功率（%）",
-    "稳定性：长文档批处理的中断率/崩溃率（%）",
-    "质量抽检：随机页抽样的可读文本比例与乱码/空页比例（%）"
+    "基础知识：在后续接触同类任务时，具有环境和版本检查的意识",
+    "稳定性：长文档可以一次性处理几百、上千页不出错"
   ],
   deliverables: [
-    "稳定版本组合与重装步骤（可复制粘贴执行）",
-    "VSCode/CMD 环境一致性检查清单（解释器/Kernel/Path）",
-    "OCR 批处理输出与日志规范（便于抽查与回溯）"
+    "稳定版本组合与重装步骤",
+    "本地环境和path配置与debug相关经验"
   ],
   tags: ["PaddleOCR", "OCR", "GPU", "CUDA/cuDNN", "环境排障", "可复现"],
   status: "Ready"
@@ -113,12 +111,12 @@ export const projects: Project[] = [
     suggestedMetrics: [
       "复算一致性：同一 CSV 行重复回填时输出一致",
       "场景覆盖度：可维护场景行数与参数维度数量",
-      "迭代成本：新增 GPU/精度/效率假设所需改动量"
+      "迭代成本：新增 GPU/精度/效率假设只要进行简单添加"
     ],
     deliverables: [
       "单文件计算器（本地打开或静态托管即可）",
       "场景台账 CSV（输入与输出同一行）",
-      "在 MW 约束下校验算力宣称可行性的示例场景"
+      "实际的案例分析：阿里张北园区"
     ],
     evidence: [
       { label: "GitHub 仓库", href: "https://github.com/Haibo114Luo/AIDC-calculator" },
@@ -194,13 +192,13 @@ export const projects: Project[] = [
       "可用性工程：一键启动脚本自动生成 IP 配置与访问入口，常见网络问题可定位"
     ],
     suggestedMetrics: [
-      "端到端启动时间：从双击脚本到手机可访问 URL",
-      "并发体验：在线玩家数与 p95 操作延迟",
-      "正确性：结算/下注/重置关键流程用例通过率"
+      "本地迅速启动：从双击脚本到手机可访问 URL",
+      "数据全程同步：在线玩家每次下注/结算后余额与底池正确更新",
+      "可扩展性：新增下注类型/结算规则的开发成本低"
     ],
     deliverables: [
       "一键启动脚本（自动探测 IP + 拉起多服务/端口）",
-      "后端 API（注册/下注/底池/余额/清空）+ SQLite 持久化",
+      "后端 API（注册/下注/底池/余额/清空）+ SQLite ",
       "可跨设备访问的浏览器前端"
     ],
     evidence: [
@@ -214,8 +212,8 @@ export const projects: Project[] = [
     status: "Ready",
     featuredRank: 2,
     proofPoints: [
-      "需求迭代驱动落地：在真实牌局中快速收敛到“少交互 + 强约束”流程",
-      "端到端可用：多端口服务编排 + 代理转发 + 局域网排障",
+      "需求迭代驱动落地：根据真实牌局需求最小化交互动作，形成稳定可靠的实现",
+      "强健可用：多端口服务编排 + 代理转发 + 局域网自动ip识别",
       "正确性优先：下注/底池/结算/重置等关键状态可测试、可复盘"
     ],
     sections: {
@@ -289,9 +287,9 @@ export const projects: Project[] = [
       }
     ],
     suggestedMetrics: [
-      "重要新闻命中率：抽样人工标注 Top-N 是否真正‘改变边际预期’",
-      "结构合规率：缺字段/缺URL/地区顺序错误/格式漂移的占比",
-      "入库时效：从报道发布时间到写入知识库的延迟（小时）"
+      "重要新闻知识：通过严格规定的回看，获取分辨重要新闻的行业知识",
+      "结构合规：严格schema输出，缺字段/缺URL/地区顺序错误/格式漂移的错误较少发生",
+      "每日工作量：只需要简单的prompt就可以自动完成每天的指定新闻收集，大大节省时间"
     ],
     deliverables: [
       "可直接复用的指令集（hindsight + 日更两套逻辑）",
@@ -336,9 +334,9 @@ export const projects: Project[] = [
       }
     ],
     suggestedMetrics: [
-      "结构化合规率：字段缺失/格式漂移/引用缺页码的占比",
-      "转换成功率：可读 Markdown 覆盖率（按页/按章节抽样）",
-      "质检成本：抽样回放到具体页/段的平均耗时"
+      "知识获取效率：大大提高阅读报告获取关键信息的效率（相较于人工笔记）",
+      "转换成功率：可读 Markdown 准确覆盖全文",
+      "后续任务：通过RAG完成知识库构建"
     ],
     deliverables: [
       "PDF/EPUB→Markdown 转换 notebooks（OCR/解析，可复跑）",

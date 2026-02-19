@@ -14,6 +14,9 @@ const STATUS_LABELS: Record<NonNullable<Project["status"]>, string> = {
   WIP: "进行中"
 };
 
+const EXTERNAL_LINK_CLASS =
+  "inline-flex items-center rounded-sm text-blue-300 underline decoration-blue-300 underline-offset-4 transition hover:text-blue-200 hover:decoration-blue-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/70";
+
 const FEATURED_SHOWCASE = [
   {
     title: "研报整理流水线：PDF→Markdown→结构化结论库",
@@ -224,7 +227,7 @@ function ProjectCard({
           </section>
 
           <section className="rounded-xl border border-white/10 bg-black/20 p-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">评估方式（如何衡量）</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">效果评估</h3>
             {p.suggestedMetrics.length > 0 ? (
               <ul className="mt-3 space-y-2 text-sm text-white/75">
                 {p.suggestedMetrics.slice(0, 4).map((metric, idx) => (
@@ -251,7 +254,7 @@ function ProjectCard({
                     href={item.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/80 transition hover:border-white/20 hover:bg-white/10"
+                    className={cx(EXTERNAL_LINK_CLASS, "text-xs")}
                   >
                     {item.label}
                   </a>
@@ -332,7 +335,7 @@ export default function Page() {
                 href="https://github.com/Haibo114Luo"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
+                className={cx(EXTERNAL_LINK_CLASS, "text-sm")}
               >
                 GitHub 主页 ↗
               </a>
