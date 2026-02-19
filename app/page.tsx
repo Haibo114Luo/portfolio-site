@@ -103,33 +103,29 @@ function FeaturedShowcaseCard({
       <h3 className="text-lg font-semibold tracking-tight text-white">{title}</h3>
 
       <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
-        <p className="text-xs font-semibold uppercase tracking-wide text-white/70">图片占位符1</p>
         <img
           src={image1}
           alt={`${title} 图片 1`}
-          className="mt-2 h-48 w-full rounded-lg border border-white/10 object-cover"
+          className="h-auto w-full rounded-lg border border-white/10 object-contain"
           loading="lazy"
         />
       </section>
 
       <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
-        <p className="text-xs font-semibold uppercase tracking-wide text-white/70">文字解释占位符1</p>
-        <p className="mt-2 text-sm leading-6 text-white/75">{text1}</p>
+        <p className="text-sm leading-6 text-white/75">{text1}</p>
       </section>
 
       <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
-        <p className="text-xs font-semibold uppercase tracking-wide text-white/70">图片占位符2</p>
         <img
           src={image2}
           alt={`${title} 图片 2`}
-          className="mt-2 h-48 w-full rounded-lg border border-white/10 object-cover"
+          className="h-auto w-full rounded-lg border border-white/10 object-contain"
           loading="lazy"
         />
       </section>
 
       <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
-        <p className="text-xs font-semibold uppercase tracking-wide text-white/70">文字解释占位符2</p>
-        <p className="mt-2 text-sm leading-6 text-white/75">{text2}</p>
+        <p className="text-sm leading-6 text-white/75">{text2}</p>
       </section>
     </article>
   );
