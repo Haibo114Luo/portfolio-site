@@ -33,34 +33,69 @@ export type Project = {
 // 2) page.tsx imports it with: import { projects, tagUniverse, moduleUniverse } from "./projects";
 
 export const projects: Project[] = [
-  {
-    id: "P1",
-    module: "Vibe Coding",
-    category: "分类 A",
-    title: "",
-    subtitle: "",
-    description: "",
-    coreSkills: [],
-    evidence: [],
-    suggestedMetrics: [],
-    deliverables: [],
-    tags: ["机器学习", "Whisper", "推理", "流程"],
-    status: "Ready"
-  },
-  {
-    id: "P2",
-    module: "Vibe Coding",
-    category: "分类 B",
-    title: "",
-    subtitle: "",
-    description: "",
-    coreSkills: [],
-    evidence: [],
-    suggestedMetrics: [],
-    deliverables: [],
-    tags: ["OCR", "PaddleOCR", "CUDA", "排障"],
-    status: "Ready"
-  },
+{
+  id: "P1",
+  module: "Vibe Coding",
+  category: "本地ML部署 · 语音转文字",
+  title: "Whisper 本地转写：批量 ASR + 提示词/主题确认",
+  subtitle: "GPU/CPU 自动切换；目录批处理；prompt.txt 约束术语与上下文",
+  description:
+    "把 Whisper 做成可在 Windows 本地稳定跑的批量转写工具：输入为一个音频目录（m4a/wav/mp3/flac/ogg），输出为同名 txt 文件落盘。脚本会先检查 CUDA 可用性并选择设备（cuda/cpu），模型只加载一次然后批量处理所有文件；同时支持从 prompt.txt 读取‘主题/术语/人名’等上下文提示，保证转写更贴近会议/研究场景，并在每次批处理前显式确认 prompt 是否加载成功（便于面试时解释“如何用提示词把模型对齐到具体业务主题”）。",
+  coreSkills: [
+    "本地可用性：GPU 可用则 fp16 加速，否则自动回退 CPU（无需改代码）",
+    "批处理工程化：目录扫描 + 统一输出目录 + 单次加载模型，减少重复开销",
+    "提示词/主题对齐：prompt.txt 外置，批处理前确认加载状态，约束领域词汇与语境",
+    "可观测性：每文件进度、耗时、失败捕获与落盘路径打印，便于排障与复盘"
+  ],
+  evidence: [
+    { label: "Notebook（本地文件，可提供）", href: "#" },
+    { label: "Whisper 开源实现（所用库）", href: "https://github.com/openai/whisper" }
+  ],
+  suggestedMetrics: [
+    "主题一致性：同一主题/术语在转写中的命中率（人工抽样）",
+    "稳定性：批处理失败率与可定位错误日志比例（%）",
+    "效率：单条音频转写耗时 / 音频时长（RTF，越低越好）"
+  ],
+  deliverables: [
+    "批量转写脚本（目录→txt 落盘）",
+    "prompt.txt 主题/术语模板（可复用到不同项目/会议）",
+    "一套可面试演示的本地运行流程（GPU/CPU 双路径）"
+  ],
+  tags: ["Whisper", "ASR", "本地部署", "批处理", "Prompt", "GPU/CPU"],
+  status: "Ready"
+},
+{
+  id: "P2",
+  module: "Vibe Coding",
+  category: "本地ML部署 · OCR工程",
+  title: "PaddleOCR 本地 OCR：PDF→文本（GPU）与环境排障",
+  subtitle: "版本锁定 + VSCode/CMD 环境一致性 + CUDA/cuDNN 路径治理",
+  description:
+    "把 PaddleOCR GPU 版在 Windows 本地跑通并稳定化，用于 PDF 批量转文字/结构化提取。项目核心不在‘调用一次 OCR API’，而在工程侧把不可控因素收敛：处理过 VSCode Notebook 内核崩溃（cuDNN DLL 缺失/路径问题）与同一机器 CMD 可跑但 VSCode 不可跑的环境不一致问题；通过明确的版本组合锁定与依赖重装顺序，把 CUDA/cuDNN/NumPy/OpenCV 等冲突点压平，并按需关闭不需要的初始化模块、静音 warning/debug，最终形成可复现的本地 OCR 环境与排障清单（可用于面试展示“如何把一个不稳定的本地AI工具变成可交付系统”）。",
+  coreSkills: [
+    "系统化排障：从报错（DLL 缺失/Kernel died）反推依赖链与加载路径，定位根因而非试错",
+    "环境治理：锁定稳定版本组合（Python/pp-gpu/paddleocr/numpy/opencv/imgaug）并按顺序重装",
+    "一致性问题处理：解决 VSCode 与 CMD 运行差异（解释器/Kernel/Path/依赖来源）",
+    "工程可控性：关闭非必要组件初始化、静音 warning/debug，保证流水线输出可读可用"
+  ],
+  evidence: [
+    { label: "环境与排障记录（本地文件，可提供）", href: "#" },
+    { label: "PaddleOCR 开源实现（所用框架）", href: "https://github.com/PaddlePaddle/PaddleOCR" }
+  ],
+  suggestedMetrics: [
+    "可复现性：新机器/新环境按步骤复装一次成功率（%）",
+    "稳定性：长文档批处理的中断率/崩溃率（%）",
+    "质量抽检：随机页抽样的可读文本比例与乱码/空页比例（%）"
+  ],
+  deliverables: [
+    "稳定版本组合与重装步骤（可复制粘贴执行）",
+    "VSCode/CMD 环境一致性检查清单（解释器/Kernel/Path）",
+    "OCR 批处理输出与日志规范（便于抽查与回溯）"
+  ],
+  tags: ["PaddleOCR", "OCR", "GPU", "CUDA/cuDNN", "环境排障", "可复现"],
+  status: "Ready"
+}
+,
   {
     id: "P3",
     module: "Vibe Coding",
@@ -147,16 +182,16 @@ export const projects: Project[] = [
   {
     id: "P4",
     module: "Vibe Coding",
-    category: "全栈 · 复杂状态/规则",
-    title: "德州扑克局域网筹码管理器",
-    subtitle: "局域网一键启动：静态前端 + Flask API + SQLite 持久化 + 代理转发",
+    category: "需求迭代 · 全栈 · 端口对接",
+    title: "德州扑克记牌器：局域网筹码与底池管理",
+    subtitle: "静态前端 + Flask API + SQLite + 代理转发：多端口编排，一键启动",
     description:
-      "这是一个可替代实体筹码的轻量局域网筹码系统。玩家在同一 Wi-Fi 下即可用手机或电脑浏览器加入。系统由静态 Web 前端、Flask 后端与 SQLite 持久化组成，并通过轻量代理转发请求以规避跨域问题。Windows 批处理脚本会自动检测本机 IPv4、生成 config.json 并一键拉起全部服务，适配真实牌局中的非技术用户使用场景。",
+      "这是一个替代实体筹码的轻量局域网记账系统：同一 Wi‑Fi 下，玩家用手机/电脑浏览器加入即可记录余额、下注与底池。项目从真实牌局反馈出发迭代需求（交互更少、流程更硬约束、重置更明确），最终落成“静态 Web 前端 + Flask 后端 + SQLite 持久化 + 代理转发”的端到端架构。Windows 批处理脚本会自动检测本机 IPv4、生成 config.json 并拉起多个服务/端口，解决跨设备访问、CORS 与网络可达性问题。",
     coreSkills: [
-      "端到端架构：静态前端 + Flask 后端 + SQLite 数据层 + 代理服务",
-      "状态与规则建模：余额/下注/底池等核心状态以正确性优先",
-      "可用性工程：一键启动脚本自动生成 IP 配置与访问入口",
-      "局域网部署与排障：0.0.0.0 绑定、端口拆分、防火墙问题处理"
+      "需求拆解与快速迭代：围绕真实使用场景调整交互与规则（正确性优先）",
+      "全栈逻辑与接口契约：前端状态/后端 API/数据库模型一体化设计",
+      "端口对接与网络工程：多服务端口编排（Web/API/Proxy），代理转发规避跨域",
+      "可用性工程：一键启动脚本自动生成 IP 配置与访问入口，常见网络问题可定位"
     ],
     suggestedMetrics: [
       "端到端启动时间：从双击脚本到手机可访问 URL",
@@ -164,7 +199,7 @@ export const projects: Project[] = [
       "正确性：结算/下注/重置关键流程用例通过率"
     ],
     deliverables: [
-      "一键启动脚本（自动探测 IP + 拉起三类服务）",
+      "一键启动脚本（自动探测 IP + 拉起多服务/端口）",
       "后端 API（注册/下注/底池/余额/清空）+ SQLite 持久化",
       "可跨设备访问的浏览器前端"
     ],
@@ -175,12 +210,13 @@ export const projects: Project[] = [
       { label: "后端（data.py）", href: "https://github.com/Haibo114Luo/chips/blob/main/data.py" },
       { label: "代理（proxy.py）", href: "https://github.com/Haibo114Luo/chips/blob/main/proxy.py" }
     ],
-    tags: ["全栈", "Flask", "SQLite", "局域网", "批处理", "代理", "CORS"],
+    tags: ["全栈", "Flask", "SQLite", "局域网", "批处理", "代理", "CORS", "Ports", "API"],
     status: "Ready",
+    featuredRank: 2,
     proofPoints: [
-      "本地一键部署：自动识别 IPv4 + 生成配置 + 启动多服务",
-      "职责清晰拆分：静态 UI / 后端 API / 代理转发",
-      "SQLite 持久化支持牌局重置与数据留存"
+      "需求迭代驱动落地：在真实牌局中快速收敛到“少交互 + 强约束”流程",
+      "端到端可用：多端口服务编排 + 代理转发 + 局域网排障",
+      "正确性优先：下注/底池/结算/重置等关键状态可测试、可复盘"
     ],
     sections: {
       goal:
@@ -221,31 +257,103 @@ export const projects: Project[] = [
   {
     id: "P5",
     module: "AI Workflow",
-    category: "分类 E",
-    title: "",
-    subtitle: "",
-    description: "",
-    coreSkills: [],
-    evidence: [],
-    suggestedMetrics: [],
-    deliverables: [],
-    tags: ["提示词", "检索", "工作流", "评估"],
+    category: "Prompt系统 · 新闻检索",
+    title: "News Collecting GPT：新闻搜集→结构化输出→知识库",
+    subtitle: "指令集 + 重要性量表 + 格式校正：稳定日更、可审计可迭代",
+    description:
+      "把“每天跨地区搜集 AIDC/风电新闻”固化为可复用流程：先用可执行的‘重要性’规则做筛选与排序，再用固定 schema 强制输出（日期/地区/类别/事件/影响/来源URL），并设置停止条件避免硬凑。附带 hindsight 标注集生成（Major/NotMajor/Unlabeled + hard negative），以及 md→txt 合并脚本，把日更内容沉淀为可检索的单文件上下文（保留 SOURCE/FILE 便于回溯）。",
+    coreSkills: [
+      "把业务‘重要性’定义成可执行规则（AIDC 专用量表/升级门槛）",
+      "Prompt/Schema 设计：锁定层级与字段，降低结构漂移与幻觉空间",
+      "可评测迭代：hindsight 标注集（Major/NotMajor/Unlabeled）与 hard negative",
+      "知识沉淀：日更 markdown 自动合并为单文件知识库（可追溯边界）"
+    ],
+    evidence: [
+      { label: "GitHub Repo", href: "https://github.com/Haibo114Luo/News_collecting_GPT" },
+      { label: "专用GPT《新闻》", href: "https://chatgpt.com/g/g-691bc3ebeb80819190eab1dc2158751d-xin-wen" },
+      {
+        label: "总指令（hindsight+日更）",
+        href: "https://raw.githubusercontent.com/Haibo114Luo/News_collecting_GPT/main/%E6%8C%87%E4%BB%A4/%E6%8C%87%E4%BB%A4.md"
+      },
+      {
+        label: "AIDC重要性量表",
+        href: "https://raw.githubusercontent.com/Haibo114Luo/News_collecting_GPT/main/%E6%8C%87%E4%BB%A4/AIDC%E9%87%8D%E8%A6%81%E6%80%A7.md"
+      },
+      {
+        label: "输出Schema（格式校正器）",
+        href: "https://raw.githubusercontent.com/Haibo114Luo/News_collecting_GPT/main/%E6%8C%87%E4%BB%A4/%E6%A0%BC%E5%BC%8F.txt"
+      },
+      {
+        label: "md→txt 知识库合并脚本",
+        href: "https://github.com/Haibo114Luo/News_collecting_GPT/blob/main/md_to_txt/to_txt.ipynb"
+      }
+    ],
+    suggestedMetrics: [
+      "重要新闻命中率：抽样人工标注 Top-N 是否真正‘改变边际预期’",
+      "结构合规率：缺字段/缺URL/地区顺序错误/格式漂移的占比",
+      "入库时效：从报道发布时间到写入知识库的延迟（小时）"
+    ],
+    deliverables: [
+      "可直接复用的指令集（hindsight + 日更两套逻辑）",
+      "固定输出 schema（层级 + 字段 + 类别标签）",
+      "merged_context 单文件知识库（保留 SOURCE/FILE 边界）"
+    ],
+    tags: ["Prompt系统", "Schema输出", "新闻检索", "评测迭代", "知识库", "AIDC/风电"],
     status: "Ready"
   },
   {
     id: "P6",
     module: "AI Workflow",
-    category: "分类 F",
-    title: "",
-    subtitle: "",
-    description: "",
-    coreSkills: [],
-    evidence: [],
-    suggestedMetrics: [],
-    deliverables: [],
-    tags: ["Schema", "抽取", "质检", "笔记"],
-    status: "Ready"
-  }
+    category: "研报整理 · 本地ML部署 + Prompt工程",
+    title: "研报整理流水线：PDF→Markdown→结构化结论库",
+    subtitle: "本地 OCR/解析 + 清洗分段 + Schema 抽取：可质检、可复现、可扩散",
+    description:
+      "把研报从“不可控的 PDF 版面”变成可被机器稳定处理的结构化资产：先在本地完成 OCR/解析，把 PDF/EPUB 统一转成 Markdown，并在进入 LLM 前完成去噪、分页锚点与段落切分；再用固定 Schema + Hook 续写协议做笔记/数据抽取，强制输出字段、引用来源（页码/链接）与错误记录，便于抽样质检与持续迭代。目标不是写得像人，而是把研究阅读变成一条可复制到团队的标准化工作流（AI diffusion）。",
+    coreSkills: [
+      "本地 ML 部署与排障：OCR/解析链路在 Windows GPU 环境跑通并稳定化（版本/依赖/驱动问题可定位）",
+      "Prompt engineering：Schema 驱动输出（字段/单位/时间口径/引用来源），降低幻觉与格式漂移",
+      "长文确定性处理：分段输入 + Hook 续写协议，对抗截断，进度可追踪、可回滚",
+      "质量控制与可复现：输入/中间产物/输出目录化；抽样校验可回放到具体页/段"
+    ],
+    evidence: [
+      { label: "GitHub Repo", href: "https://github.com/Haibo114Luo/Report_note_generation" },
+      { label: "专用GPT《报告》", href: "https://chatgpt.com/g/g-6958c62859308191a56c55be410caad7-bao-gao" },
+      {
+        label: "PDF→MD（含OCR）notebook",
+        href: "https://github.com/Haibo114Luo/Report_note_generation/blob/main/pdf_to_md_2.ipynb"
+      },
+      {
+        label: "Markdown 清洗 refine notebook",
+        href: "https://github.com/Haibo114Luo/Report_note_generation/blob/main/refine_md.ipynb"
+      },
+      {
+        label: "笔记输出协议（含分段/Hook要求）",
+        href: "https://raw.githubusercontent.com/Haibo114Luo/Report_note_generation/main/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E6%8C%87%E4%BB%A4.md"
+      },
+      {
+        label: "README（整体pipeline说明）",
+        href: "https://github.com/Haibo114Luo/Report_note_generation/blob/main/README.md"
+      }
+    ],
+    suggestedMetrics: [
+      "结构化合规率：字段缺失/格式漂移/引用缺页码的占比",
+      "转换成功率：可读 Markdown 覆盖率（按页/按章节抽样）",
+      "质检成本：抽样回放到具体页/段的平均耗时"
+    ],
+    deliverables: [
+      "PDF/EPUB→Markdown 转换 notebooks（OCR/解析，可复跑）",
+      "Markdown 清洗与切分规则（统一层级/分页锚点）",
+      "结构化输出协议（Schema + Hook 续写 + 引用规范）"
+    ],
+    tags: ["研报整理", "本地部署", "OCR", "Markdown", "Prompt", "Schema", "Hook续写", "AI Diffusion"],
+    status: "Ready",
+    featuredRank: 1,
+    proofPoints: [
+      "离线预处理 + 结构化抽取 + 质检回放：把研报处理做成确定性流水线",
+      "Schema 强约束输出：字段/单位/时间口径/引用来源齐全，便于自动入库",
+      "强调 AI diffusion：把个人效率提升扩散为可复用的团队工作流"
+    ]
+  },
 ];
 
 export const tagUniverse: string[] = Array.from(new Set(projects.flatMap((p) => p.tags))).sort();
