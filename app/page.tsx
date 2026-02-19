@@ -4,15 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { moduleUniverse, projects, tagUniverse, type Project } from "./projects";
 
-const TEMPLATE_SECTIONS = [
-  "目标",
-  "流程/架构",
-  "难点",
-  "结果",
-  "复现",
-  "证据"
-] as const;
-
 const MODULE_LABELS: Record<Project["module"], string> = {
   "Vibe Coding": "Vibe 编程",
   "AI Workflow": "AI 工作流"
@@ -89,7 +80,11 @@ function ProjectCard({
   const title = p.title.trim().length > 0 ? p.title : "（待补充）";
   const subtitle = p.subtitle.trim();
   const description = p.description.trim();
-  const proof = p.proofPoints?.[0]?.trim() ?? "";
+  const featureHighlights = (p.proofPoints ?? [])
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0)
+    .slice(0, 2);
+  const proof = featureHighlights[0] ?? "";
 
   return (
     <motion.article
@@ -110,169 +105,190 @@ function ProjectCard({
         featured ? "min-h-[430px]" : "min-h-[380px]"
       )}
     >
-      <header className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge>{p.id}</Badge>
-            <Badge>{MODULE_LABELS[p.module]}</Badge>
-            <Badge>{p.category}</Badge>
-            {p.status ? <Badge>{STATUS_LABELS[p.status]}</Badge> : null}
+      <header className="min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge>{p.id}</Badge>
+          <Badge>{MODULE_LABELS[p.module]}</Badge>
+          <Badge>{p.category}</Badge>
+          {p.status ? <Badge>{STATUS_LABELS[p.status]}</Badge> : null}
+        </div>
+
+        <h2 className="mt-3 text-lg font-semibold tracking-tight text-white">{title}</h2>
+        {subtitle ? (
+          <p className="mt-2 text-sm text-white/75">{subtitle}</p>
+        ) : (
+          <div className="mt-2 max-w-sm">
+            <Skeleton className="h-3 w-full" />
           </div>
-
-          <h2 className="mt-3 text-lg font-semibold tracking-tight text-white">{title}</h2>
-          {subtitle ? (
-            <p className="mt-2 text-sm text-white/75">{subtitle}</p>
-          ) : (
-            <div className="mt-2 max-w-sm">
-              <Skeleton className="h-3 w-full" />
-            </div>
-          )}
-        </div>
-
-        <div className="hidden shrink-0 sm:block">
-          <div className="h-10 w-10 rounded-xl border border-white/10 bg-white/5 group-hover:bg-white/10" />
-        </div>
+        )}
       </header>
 
-      <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">证据要点</h3>
-        {proof ? (
-          <p className="mt-2 text-sm leading-6 text-white/80">{proof}</p>
-        ) : (
-          <Skeleton className="mt-2 h-3 w-full" />
-        )}
-      </section>
-
-      {description ? (
-        <p className="mt-4 text-sm leading-6 text-white/75">{description}</p>
-      ) : (
-        <div className="mt-4 space-y-2">
-          <Skeleton className="h-3 w-full" />
-          <Skeleton className="h-3 w-10/12" />
-        </div>
-      )}
-
-      <div className="mt-4 flex flex-wrap gap-2">
-        {p.tags.slice(0, 8).map((t) => (
-          <span
-            key={t}
-            className="rounded-full bg-white/5 px-2.5 py-1 text-xs text-white/60 ring-1 ring-inset ring-white/10"
-          >
-            {t}
-          </span>
-        ))}
-      </div>
-
-      <div className={cx("mt-5", featured ? "grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]" : "")}>
-        <div>
-          <div className="grid gap-4 md:grid-cols-2">
-            <section className="rounded-xl border border-white/10 bg-black/20 p-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">我做了什么</h3>
-              {p.coreSkills.length > 0 ? (
-                <ul className="mt-3 space-y-2 text-sm text-white/75">
-                  {p.coreSkills.slice(0, 4).map((skill, idx) => (
-                    <li key={`${p.id}-skill-${idx}`} className="leading-6">
-                      {skill}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="mt-3">
-                  <SkeletonLines rows={3} />
-                </div>
-              )}
-            </section>
-
-            <section className="rounded-xl border border-white/10 bg-black/20 p-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">
-                评估方式（如何衡量）
-              </h3>
-              {p.suggestedMetrics.length > 0 ? (
-                <ul className="mt-3 space-y-2 text-sm text-white/75">
-                  {p.suggestedMetrics.slice(0, 4).map((metric, idx) => (
-                    <li key={`${p.id}-metric-${idx}`} className="leading-6">
-                      {metric}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="mt-3">
-                  <SkeletonLines rows={3} />
-                </div>
-              )}
-            </section>
-          </div>
-
+      {featured ? (
+        <>
           <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">证据链接</h3>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {p.evidence.length > 0
-                ? p.evidence.map((item, idx) => (
-                    <a
-                      key={`${p.id}-evidence-${idx}`}
-                      href={item.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/80 transition hover:border-white/20 hover:bg-white/10"
-                    >
-                      {item.label}
-                    </a>
-                  ))
-                : Array.from({ length: 2 }).map((_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      disabled
-                      className="inline-flex cursor-not-allowed items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 opacity-70"
-                    >
-                      <Skeleton className="h-3 w-20" />
-                    </button>
-                  ))}
-            </div>
-          </section>
-
-          <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">交付物</h3>
-            {p.deliverables.length > 0 ? (
-              <div className="mt-3 flex flex-wrap gap-2">
-                {p.deliverables.map((item, idx) => (
-                  <span
-                    key={`${p.id}-deliverable-${idx}`}
-                    className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs text-white/70"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">项目简介</h3>
+            {description ? (
+              <p className="mt-2 text-sm leading-6 text-white/80">{description}</p>
             ) : (
-              <div className="mt-3 flex flex-wrap gap-2">
-                {Array.from({ length: 2 }).map((_, i) => (
-                  <span
-                    key={i}
-                    className="inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 opacity-70"
-                  >
-                    <Skeleton className="h-3 w-20" />
-                  </span>
-                ))}
+              <div className="mt-2">
+                <SkeletonLines rows={4} />
               </div>
             )}
           </section>
-        </div>
 
-        {featured ? (
-          <aside className="rounded-xl border border-white/10 bg-black/20 p-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">模板结构</h3>
-            <ul className="mt-3 space-y-2">
-              {TEMPLATE_SECTIONS.map((name) => (
-                <li key={name} className="rounded-lg border border-white/10 bg-white/[0.03] p-2">
-                  <p className="text-xs text-white/70">{name}</p>
-                  <Skeleton className="mt-2 h-2.5 w-3/4" />
-                </li>
-              ))}
-            </ul>
-          </aside>
-        ) : null}
-      </div>
+          <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">面试看点</h3>
+            {featureHighlights.length > 0 ? (
+              <ul className="mt-2 space-y-2 text-sm leading-6 text-white/80">
+                {featureHighlights.map((item) => (
+                  <li key={`${p.id}-${item}`}>{item}</li>
+                ))}
+              </ul>
+            ) : (
+              <div className="mt-2">
+                <SkeletonLines rows={2} />
+              </div>
+            )}
+          </section>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {p.tags.slice(0, 8).map((t) => (
+              <span
+                key={t}
+                className="rounded-full bg-white/5 px-2.5 py-1 text-xs text-white/60 ring-1 ring-inset ring-white/10"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+        </>
+      ) : (
+        <>
+          <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">证据要点</h3>
+            {proof ? (
+              <p className="mt-2 text-sm leading-6 text-white/80">{proof}</p>
+            ) : (
+              <Skeleton className="mt-2 h-3 w-full" />
+            )}
+          </section>
+
+          {description ? (
+            <p className="mt-4 text-sm leading-6 text-white/75">{description}</p>
+          ) : (
+            <div className="mt-4 space-y-2">
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-10/12" />
+            </div>
+          )}
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {p.tags.slice(0, 8).map((t) => (
+              <span
+                key={t}
+                className="rounded-full bg-white/5 px-2.5 py-1 text-xs text-white/60 ring-1 ring-inset ring-white/10"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-5">
+            <div className="grid gap-4 md:grid-cols-2">
+              <section className="rounded-xl border border-white/10 bg-black/20 p-4">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">我做了什么</h3>
+                {p.coreSkills.length > 0 ? (
+                  <ul className="mt-3 space-y-2 text-sm text-white/75">
+                    {p.coreSkills.slice(0, 4).map((skill, idx) => (
+                      <li key={`${p.id}-skill-${idx}`} className="leading-6">
+                        {skill}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="mt-3">
+                    <SkeletonLines rows={3} />
+                  </div>
+                )}
+              </section>
+
+              <section className="rounded-xl border border-white/10 bg-black/20 p-4">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">
+                  评估方式（如何衡量）
+                </h3>
+                {p.suggestedMetrics.length > 0 ? (
+                  <ul className="mt-3 space-y-2 text-sm text-white/75">
+                    {p.suggestedMetrics.slice(0, 4).map((metric, idx) => (
+                      <li key={`${p.id}-metric-${idx}`} className="leading-6">
+                        {metric}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="mt-3">
+                    <SkeletonLines rows={3} />
+                  </div>
+                )}
+              </section>
+            </div>
+
+            <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">证据链接</h3>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {p.evidence.length > 0
+                  ? p.evidence.map((item, idx) => (
+                      <a
+                        key={`${p.id}-evidence-${idx}`}
+                        href={item.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/80 transition hover:border-white/20 hover:bg-white/10"
+                      >
+                        {item.label}
+                      </a>
+                    ))
+                  : Array.from({ length: 2 }).map((_, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        disabled
+                        className="inline-flex cursor-not-allowed items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 opacity-70"
+                      >
+                        <Skeleton className="h-3 w-20" />
+                      </button>
+                    ))}
+              </div>
+            </section>
+
+            <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">交付物</h3>
+              {p.deliverables.length > 0 ? (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {p.deliverables.map((item, idx) => (
+                    <span
+                      key={`${p.id}-deliverable-${idx}`}
+                      className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs text-white/70"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {Array.from({ length: 2 }).map((_, i) => (
+                    <span
+                      key={i}
+                      className="inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 opacity-70"
+                    >
+                      <Skeleton className="h-3 w-20" />
+                    </span>
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
+        </>
+      )}
     </motion.article>
   );
 }
@@ -305,32 +321,24 @@ function FeaturedPlaceholderCard({ index, onOpen }: { index: number; onOpen: (id
         <Skeleton className="h-3 w-11/12" />
       </div>
 
-      <div className="mt-5 grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
-        <div className="space-y-4">
-          <section className="rounded-xl border border-white/10 bg-black/20 p-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">证据要点</h3>
-            <Skeleton className="mt-2 h-3 w-full" />
-          </section>
-
-          <section className="rounded-xl border border-white/10 bg-black/20 p-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">我做了什么</h3>
-            <div className="mt-3">
-              <SkeletonLines rows={3} />
-            </div>
-          </section>
+      <section className="mt-5 rounded-xl border border-white/10 bg-black/20 p-4">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">项目简介</h3>
+        <div className="mt-2">
+          <SkeletonLines rows={4} />
         </div>
+      </section>
 
-        <aside className="rounded-xl border border-white/10 bg-black/20 p-4">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">模板结构</h3>
-          <ul className="mt-3 space-y-2">
-            {TEMPLATE_SECTIONS.map((name) => (
-              <li key={name} className="rounded-lg border border-white/10 bg-white/[0.03] p-2">
-                <p className="text-xs text-white/70">{name}</p>
-                <Skeleton className="mt-2 h-2.5 w-3/4" />
-              </li>
-            ))}
-          </ul>
-        </aside>
+      <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">面试看点</h3>
+        <div className="mt-2">
+          <SkeletonLines rows={2} />
+        </div>
+      </section>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-6 w-16 rounded-full" />
+        ))}
       </div>
     </motion.article>
   );
@@ -540,9 +548,6 @@ export default function Page() {
               <h1 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">
                 Vibe Coding × AI Diffusion
               </h1>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-white/75">
-                我想尝试的岗位通常要求两种核心能力：一是 vibe coding——在不确定需求下快速把系统做出来并完成排障；二是 AI diffusion——把模型能力嵌入日常工作流，用结构化输出、质检与可复现产物把效率扩散到团队。置顶项目对应这两条能力线：研报整理流水线（本地 ML 部署 + prompt/schema + 自动化入库）与德州扑克记牌器（需求迭代 + 全栈状态/端口对接）。
-              </p>
             </div>
 
             <div className="flex flex-wrap content-start gap-2 lg:justify-end">
@@ -564,17 +569,26 @@ export default function Page() {
           </div>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <article key={i} className="rounded-xl border border-white/10 bg-black/20 p-4">
-                <Skeleton className="h-4 w-28" />
-                <Skeleton className="mt-3 h-3 w-11/12" />
-                <div className="mt-4 flex gap-2">
-                  <Skeleton className="h-6 w-14 rounded-full" />
-                  <Skeleton className="h-6 w-14 rounded-full" />
-                  <Skeleton className="h-6 w-14 rounded-full" />
-                </div>
-              </article>
-            ))}
+            <article className="rounded-xl border border-white/10 bg-black/20 p-4">
+              <h3 className="text-sm font-semibold text-white">个人能力</h3>
+              <p className="mt-2 text-sm leading-6 text-white/75">
+                能在需求不完全明确时快速完成原型搭建、联调与排障，把想法稳定落地为可运行系统。
+              </p>
+            </article>
+
+            <article className="rounded-xl border border-white/10 bg-black/20 p-4">
+              <h3 className="text-sm font-semibold text-white">作品集简介</h3>
+              <p className="mt-2 text-sm leading-6 text-white/75">
+                作品集采用证据优先结构，强调目标、流程、难点、结果与复现路径，便于在面试中快速评估工程能力。
+              </p>
+            </article>
+
+            <article className="rounded-xl border border-white/10 bg-black/20 p-4">
+              <h3 className="text-sm font-semibold text-white">希望从事岗位</h3>
+              <p className="mt-2 text-sm leading-6 text-white/75">
+                AI 应用工程、AI 工作流工程，或 AI + 全栈产品工程相关岗位，侧重从原型到可交付系统的全流程实现。
+              </p>
+            </article>
           </div>
         </div>
       </section>
@@ -675,4 +689,3 @@ export default function Page() {
     </main>
   );
 }
-
