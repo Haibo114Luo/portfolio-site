@@ -21,16 +21,16 @@ const FEATURED_SHOWCASE = [
   {
     title: "研报整理流水线：PDF→Markdown→结构化结论库",
     image1: "/featured/report-1.png",
-    text1: "文字解释占位符1",
+    text1: "通过标准化的字段输出，高效构建由报告组成的知识库；对于明确目标结论的场景，由于输出内容严格遵循固定字段，后续的手动量化分析成为可能。",
     image2: "/featured/report-2.png",
-    text2: "文字解释占位符2"
+    text2: "预处理工作后统一使用md格式上传，可以稳定让专用GPT一次性读取超长的文本，后续通过简单指令就可以获取全书的笔记和总结。"
   },
   {
     title: "德州扑克记牌器：局域网筹码与底池管理",
     image1: "/featured/chips-1.png",
-    text1: "文字解释占位符1",
+    text1: "该项目是一个基于 Python + Web 的 德州扑克局域网记分系统。整个小程序由后端服务、前端页面和代理服务组成，且使用 Flask + SQLite。",
     image2: "/featured/chips-2.png",
-    text2: "文字解释占位符2"
+    text2: "在实际游戏过程中，可以实现下注、加注、规则查看和最终计分功能。"
   }
 ] as const;
 
