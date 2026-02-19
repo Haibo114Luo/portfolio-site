@@ -348,21 +348,27 @@ export default function Page() {
             <article className="rounded-xl border border-white/10 bg-black/20 p-4">
               <h3 className="text-sm font-semibold text-white">个人能力</h3>
               <p className="mt-2 text-sm leading-6 text-white/75">
-                能在需求不完全明确且快速变化的情况下，用“先跑通再收敛”的方式把原型做成可交付系统：前后端联调、接口契约、端口/网络可达性、环境依赖与 GPU 相关问题都能定位解决。对 AI 能力的使用不是停留在调用模型，而是把不稳定的生成过程变成稳定的工作流产物（Schema 约束、分段续写、质检与回放），让效率可以复用到更多场景。
+                - 能在需求不完全明确且快速变化的情况下，用“先跑通再收敛”的方式把原型做成可交付系统，能定位解决包括：前后端联调、端口/网络可达性、环境依赖与 GPU 相关问题。
+                
+                - 对 AI 的使用重视将不稳定的生成过程变成稳定的工作流产物（Schema 约束、分段续写、质检与回放），提高效率并且可以复用到更多场景。
               </p>
             </article>
 
             <article className="rounded-xl border border-white/10 bg-black/20 p-4">
               <h3 className="text-sm font-semibold text-white">作品集简介</h3>
               <p className="mt-2 text-sm leading-6 text-white/75">
-                作品集坚持证据与可复现优先：每个项目都给出目标、关键设计取舍、踩坑与排障路径、以及可以一键复跑的入口（脚本、notebook、配置与固定依赖）。我不仅展示功能完成，更展示如何把流程标准化、如何做质量控制与边界处理，方便面试官快速评估工程交付能力。
+                - 作品集坚持证据与可复现优先：每个项目都给出目标、关键设计取舍、踩坑与排障路径、以及可以一键复跑的入口（脚本、notebook、配置与固定依赖）。
+                
+                - 通过“做了什么”和“效果评估”来显式说明通过AI工具解决问题的能力。
               </p>
             </article>
 
             <article className="rounded-xl border border-white/10 bg-black/20 p-4">
               <h3 className="text-sm font-semibold text-white">希望从事岗位</h3>
               <p className="mt-2 text-sm leading-6 text-white/75">
-                AI 应用工程、AI 工作流/平台工程、AI 产品策略等岗位。核心诉求是把模型能力嵌入真实业务链路：从本地/私有化部署、提示与结构化输出、到评测与质检闭环，再到前后端集成与上线维护，负责从原型到稳定交付的全流程实现。
+                - AI 应用工程、AI 工作流/平台工程、AI 产品策略等岗位。
+                
+                - 核心诉求是把模型能力嵌入真实业务链路：从本地/私有化部署、提示与结构化输出、到评测与质检闭环，再到前后端集成与上线维护，负责从原型到稳定交付的全流程实现。
               </p>
             </article>
           </div>

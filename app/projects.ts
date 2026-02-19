@@ -49,10 +49,10 @@ export const projects: Project[] = [
   ],
   evidence: [
     { label: "完整代码GitHub链接", href: "https://github.com/Haibo114Luo/whisper_landing/blob/main/code/test.ipynb" },
-    { label: "Whisper 开源实现（所用库）", href: "https://github.com/openai/whisper" }
+    { label: "CUDA + Whisper 跑通证据（日志）", href: "https://github.com/Haibo114Luo/whisper_landing/blob/main/verify_cuda_whisper_20260219_215448.log" }
   ],
   suggestedMetrics: [
-    "主题一致性：经过多次检验，转写文本与录音文本的内容相当一致",
+    "准确性：经过多次检验，转写文本与录音文本的内容相当一致",
     "稳定性：即便在录音质量不佳时，也能成功转写并输出（失败率低）",
     "效率：单条音频转写耗时较短，多个音频批处理并无性能退化"
   ],
@@ -79,8 +79,8 @@ export const projects: Project[] = [
     "工程可控性：关闭非必要组件初始化、静音 warning/debug，保证流水线输出可读可用"
   ],
   evidence: [
-    { label: "环境与排障记录（根据记忆生成）", href: "https://github.com/Haibo114Luo/Report_note_generation/blob/main/record.md" },
-    { label: "PaddleOCR 开源实现（所用框架）", href: "https://github.com/PaddlePaddle/PaddleOCR" }
+    { label: "环境与排障记录（根据gpt记忆生成）", href: "https://github.com/Haibo114Luo/Report_note_generation/blob/main/record.md" },
+    { label: "PaddleOCR GPU版 跑通证据（日志）", href: "https://github.com/Haibo114Luo/Report_note_generation/blob/main/paddleocr_gpu_run_proof.log" }
   ],
   suggestedMetrics: [
     "基础知识：在后续接触同类任务时，具有环境和版本检查的意识",
@@ -110,7 +110,7 @@ export const projects: Project[] = [
     ],
     suggestedMetrics: [
       "复算一致性：同一 CSV 行重复回填时输出一致",
-      "场景覆盖度：可维护场景行数与参数维度数量",
+      "真实使用场景：分析阿里张北园区的公开数据，推算数据中心的算力规模和训练速度",
       "迭代成本：新增 GPU/精度/效率假设只要进行简单添加"
     ],
     deliverables: [
@@ -123,10 +123,6 @@ export const projects: Project[] = [
       {
         label: "主 HTML （已经利用vercel部署）",
         href: "https://ai-datacenter-calculator-2026.vercel.app/"
-      },
-      {
-        label: "场景台账（CSV）",
-        href: "https://github.com/Haibo114Luo/AIDC-calculator/blob/main/%E7%BB%93%E6%9E%9C%E8%AE%B0%E5%BD%95.csv"
       }
     ],
     tags: ["AIDC", "功耗", "PUE", "MFU", "EFLOPS", "敏感性分析", "HTML", "CSV"],
@@ -203,10 +199,7 @@ export const projects: Project[] = [
     ],
     evidence: [
       { label: "GitHub 仓库", href: "https://github.com/Haibo114Luo/chips" },
-      { label: "README", href: "https://github.com/Haibo114Luo/chips/blob/main/README.md" },
-      { label: "启动脚本（PC_launch.bat）", href: "https://github.com/Haibo114Luo/chips/blob/main/PC_launch.bat" },
-      { label: "后端（data.py）", href: "https://github.com/Haibo114Luo/chips/blob/main/data.py" },
-      { label: "代理（proxy.py）", href: "https://github.com/Haibo114Luo/chips/blob/main/proxy.py" }
+      { label: "README", href: "https://github.com/Haibo114Luo/chips/blob/main/README.md" }
     ],
     tags: ["全栈", "Flask", "SQLite", "局域网", "批处理", "代理", "CORS", "Ports", "API"],
     status: "Ready",
@@ -244,11 +237,8 @@ export const projects: Project[] = [
         "注册玩家后执行下注/输赢/重置，观察底池与余额变化。"
       ],
       evidence: [
-        { label: "README（raw）", href: "https://raw.githubusercontent.com/Haibo114Luo/chips/main/README.md" },
-        { label: "PC_launch.bat（raw）", href: "https://raw.githubusercontent.com/Haibo114Luo/chips/main/PC_launch.bat" },
-        { label: "data.py（raw）", href: "https://raw.githubusercontent.com/Haibo114Luo/chips/main/data.py" },
-        { label: "proxy.py（raw）", href: "https://raw.githubusercontent.com/Haibo114Luo/chips/main/proxy.py" },
-        { label: "pip_install.bat（raw）", href: "https://raw.githubusercontent.com/Haibo114Luo/chips/main/pip_install.bat" }
+        { label: "GitHub 仓库", href: "https://github.com/Haibo114Luo/chips" },
+        { label: "README", href: "https://raw.githubusercontent.com/Haibo114Luo/chips/main/README.md" }
       ]
     }
   },
