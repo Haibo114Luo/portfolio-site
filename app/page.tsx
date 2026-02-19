@@ -1,17 +1,27 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { moduleUniverse, projects, tagUniverse, type Project } from "./projects";
 
 const TEMPLATE_SECTIONS = [
-  "Goal",
-  "Pipeline",
-  "Hard problems",
-  "Outcomes",
-  "Repro",
-  "Evidence"
+  "目标",
+  "流程/架构",
+  "难点",
+  "结果",
+  "复现",
+  "证据"
 ] as const;
+
+const MODULE_LABELS: Record<Project["module"], string> = {
+  "Vibe Coding": "Vibe 编程",
+  "AI Workflow": "AI 工作流"
+};
+
+const STATUS_LABELS: Record<NonNullable<Project["status"]>, string> = {
+  Ready: "已就绪",
+  WIP: "进行中"
+};
 
 function cx(...xs: Array<string | null | undefined | false>) {
   return xs.filter((x): x is string => typeof x === "string" && x.length > 0).join(" ");
@@ -76,7 +86,10 @@ function ProjectCard({
   featured?: boolean;
 }) {
   const reduceMotion = useReducedMotion();
-  const title = p.title.trim().length > 0 ? p.title : "(TBD)";
+  const title = p.title.trim().length > 0 ? p.title : "（待补充）";
+  const subtitle = p.subtitle.trim();
+  const description = p.description.trim();
+  const proof = p.proofPoints?.[0]?.trim() ?? "";
 
   return (
     <motion.article
@@ -101,15 +114,19 @@ function ProjectCard({
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Badge>{p.id}</Badge>
-            <Badge>{p.module}</Badge>
+            <Badge>{MODULE_LABELS[p.module]}</Badge>
             <Badge>{p.category}</Badge>
-            {p.status ? <Badge>{p.status}</Badge> : null}
+            {p.status ? <Badge>{STATUS_LABELS[p.status]}</Badge> : null}
           </div>
 
           <h2 className="mt-3 text-lg font-semibold tracking-tight text-white">{title}</h2>
-          <div className="mt-2 max-w-sm">
-            <Skeleton className="h-3 w-full" />
-          </div>
+          {subtitle ? (
+            <p className="mt-2 text-sm text-white/75">{subtitle}</p>
+          ) : (
+            <div className="mt-2 max-w-sm">
+              <Skeleton className="h-3 w-full" />
+            </div>
+          )}
         </div>
 
         <div className="hidden shrink-0 sm:block">
@@ -118,12 +135,25 @@ function ProjectCard({
       </header>
 
       <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">Proof</h3>
-        <Skeleton className="mt-2 h-3 w-full" />
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">证据要点</h3>
+        {proof ? (
+          <p className="mt-2 text-sm leading-6 text-white/80">{proof}</p>
+        ) : (
+          <Skeleton className="mt-2 h-3 w-full" />
+        )}
       </section>
 
+      {description ? (
+        <p className="mt-4 text-sm leading-6 text-white/75">{description}</p>
+      ) : (
+        <div className="mt-4 space-y-2">
+          <Skeleton className="h-3 w-full" />
+          <Skeleton className="h-3 w-10/12" />
+        </div>
+      )}
+
       <div className="mt-4 flex flex-wrap gap-2">
-        {p.tags.slice(0, 6).map((t) => (
+        {p.tags.slice(0, 8).map((t) => (
           <span
             key={t}
             className="rounded-full bg-white/5 px-2.5 py-1 text-xs text-white/60 ring-1 ring-inset ring-white/10"
@@ -133,46 +163,105 @@ function ProjectCard({
         ))}
       </div>
 
-      <div className={cx("mt-5", featured ? "grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]" : "") }>
+      <div className={cx("mt-5", featured ? "grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]" : "")}>
         <div>
           <div className="grid gap-4 md:grid-cols-2">
             <section className="rounded-xl border border-white/10 bg-black/20 p-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">What I did</h3>
-              <div className="mt-3">
-                <SkeletonLines rows={3} />
-              </div>
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">我做了什么</h3>
+              {p.coreSkills.length > 0 ? (
+                <ul className="mt-3 space-y-2 text-sm text-white/75">
+                  {p.coreSkills.slice(0, 4).map((skill, idx) => (
+                    <li key={`${p.id}-skill-${idx}`} className="leading-6">
+                      {skill}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="mt-3">
+                  <SkeletonLines rows={3} />
+                </div>
+              )}
             </section>
 
             <section className="rounded-xl border border-white/10 bg-black/20 p-4">
               <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">
-                Evaluation (how I measure)
+                评估方式（如何衡量）
               </h3>
-              <div className="mt-3">
-                <SkeletonLines rows={3} />
-              </div>
+              {p.suggestedMetrics.length > 0 ? (
+                <ul className="mt-3 space-y-2 text-sm text-white/75">
+                  {p.suggestedMetrics.slice(0, 4).map((metric, idx) => (
+                    <li key={`${p.id}-metric-${idx}`} className="leading-6">
+                      {metric}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="mt-3">
+                  <SkeletonLines rows={3} />
+                </div>
+              )}
             </section>
           </div>
 
           <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">Evidence</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">证据链接</h3>
             <div className="mt-3 flex flex-wrap gap-2">
-              {Array.from({ length: 2 }).map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  disabled
-                  className="inline-flex cursor-not-allowed items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 opacity-70"
-                >
-                  <Skeleton className="h-3 w-20" />
-                </button>
-              ))}
+              {p.evidence.length > 0
+                ? p.evidence.map((item, idx) => (
+                    <a
+                      key={`${p.id}-evidence-${idx}`}
+                      href={item.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/80 transition hover:border-white/20 hover:bg-white/10"
+                    >
+                      {item.label}
+                    </a>
+                  ))
+                : Array.from({ length: 2 }).map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      disabled
+                      className="inline-flex cursor-not-allowed items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 opacity-70"
+                    >
+                      <Skeleton className="h-3 w-20" />
+                    </button>
+                  ))}
             </div>
+          </section>
+
+          <section className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">交付物</h3>
+            {p.deliverables.length > 0 ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {p.deliverables.map((item, idx) => (
+                  <span
+                    key={`${p.id}-deliverable-${idx}`}
+                    className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs text-white/70"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {Array.from({ length: 2 }).map((_, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 opacity-70"
+                  >
+                    <Skeleton className="h-3 w-20" />
+                  </span>
+                ))}
+              </div>
+            )}
           </section>
         </div>
 
         {featured ? (
           <aside className="rounded-xl border border-white/10 bg-black/20 p-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">Template sections</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">模板结构</h3>
             <ul className="mt-3 space-y-2">
               {TEMPLATE_SECTIONS.map((name) => (
                 <li key={name} className="rounded-lg border border-white/10 bg-white/[0.03] p-2">
@@ -208,8 +297,8 @@ function FeaturedPlaceholderCard({ index, onOpen }: { index: number; onOpen: (id
       className="group min-h-[430px] cursor-pointer rounded-2xl border border-dashed border-white/20 bg-white/[0.03] p-5 transition hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/30"
     >
       <div className="flex flex-wrap gap-2">
-        <Badge>Featured</Badge>
-        <Badge>Placeholder</Badge>
+        <Badge>置顶</Badge>
+        <Badge>占位</Badge>
       </div>
       <div className="mt-4 space-y-3">
         <Skeleton className="h-6 w-40" />
@@ -219,12 +308,12 @@ function FeaturedPlaceholderCard({ index, onOpen }: { index: number; onOpen: (id
       <div className="mt-5 grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
         <div className="space-y-4">
           <section className="rounded-xl border border-white/10 bg-black/20 p-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">Proof</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">证据要点</h3>
             <Skeleton className="mt-2 h-3 w-full" />
           </section>
 
           <section className="rounded-xl border border-white/10 bg-black/20 p-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">What I did</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">我做了什么</h3>
             <div className="mt-3">
               <SkeletonLines rows={3} />
             </div>
@@ -232,7 +321,7 @@ function FeaturedPlaceholderCard({ index, onOpen }: { index: number; onOpen: (id
         </div>
 
         <aside className="rounded-xl border border-white/10 bg-black/20 p-4">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">Template sections</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">模板结构</h3>
           <ul className="mt-3 space-y-2">
             {TEMPLATE_SECTIONS.map((name) => (
               <li key={name} className="rounded-lg border border-white/10 bg-white/[0.03] p-2">
@@ -247,13 +336,36 @@ function FeaturedPlaceholderCard({ index, onOpen }: { index: number; onOpen: (id
   );
 }
 
-function DrawerSection({ label, rows }: { label: string; rows: number }) {
+function DrawerSection({
+  label,
+  rows,
+  text,
+  items
+}: {
+  label: string;
+  rows: number;
+  text?: string;
+  items?: string[];
+}) {
+  const hasText = Boolean(text && text.trim().length > 0);
+  const hasItems = Boolean(items && items.length > 0);
+
   return (
     <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
       <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">{label}</h3>
-      <div className="mt-3">
-        <SkeletonLines rows={rows} />
-      </div>
+      {hasText ? (
+        <p className="mt-3 text-sm leading-6 text-white/75">{text}</p>
+      ) : hasItems ? (
+        <ul className="mt-3 space-y-2 text-sm leading-6 text-white/75">
+          {items?.map((item, idx) => (
+            <li key={`${label}-${idx}`}>{item}</li>
+          ))}
+        </ul>
+      ) : (
+        <div className="mt-3">
+          <SkeletonLines rows={rows} />
+        </div>
+      )}
     </section>
   );
 }
@@ -300,13 +412,16 @@ function ProjectDrawer({
     };
   }, [open]);
 
+  const sectionData = project?.sections;
+  const drawerEvidence = sectionData?.evidence ?? [];
+
   return (
     <AnimatePresence>
       {open ? (
         <>
           <motion.button
             type="button"
-            aria-label="Close drawer"
+            aria-label="关闭抽屉"
             onClick={onClose}
             initial={reduceMotion ? false : { opacity: 0 }}
             animate={reduceMotion ? undefined : { opacity: 1 }}
@@ -323,36 +438,48 @@ function ProjectDrawer({
             className="fixed inset-y-0 right-0 z-50 w-full border-l border-white/10 bg-black sm:w-[560px] md:w-[620px]"
           >
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-black/95 px-5 py-4">
-              <Badge>{project?.id ?? "N/A"}</Badge>
+              <Badge>{project?.id ?? "未知"}</Badge>
               <button
                 type="button"
                 onClick={onClose}
                 className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80 transition hover:border-white/20 hover:bg-white/10"
               >
-                Close
+                关闭
               </button>
             </div>
 
             <div className="h-[calc(100%-65px)] space-y-4 overflow-y-auto p-5">
-              <DrawerSection label="Goal" rows={3} />
-              <DrawerSection label="Pipeline" rows={5} />
-              <DrawerSection label="Hard problems" rows={4} />
-              <DrawerSection label="Outcomes" rows={3} />
-              <DrawerSection label="Repro" rows={4} />
+              <DrawerSection label="目标" rows={3} text={sectionData?.goal} />
+              <DrawerSection label="流程/架构" rows={5} items={sectionData?.pipeline} />
+              <DrawerSection label="难点" rows={4} items={sectionData?.hardProblems} />
+              <DrawerSection label="结果" rows={3} items={sectionData?.outcomes} />
+              <DrawerSection label="复现" rows={4} items={sectionData?.repro} />
 
               <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">Evidence</h3>
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-white/70">证据链接</h3>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      disabled
-                      className="inline-flex cursor-not-allowed items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 opacity-70"
-                    >
-                      <Skeleton className="h-3 w-24" />
-                    </button>
-                  ))}
+                  {drawerEvidence.length > 0
+                    ? drawerEvidence.map((item, idx) => (
+                        <a
+                          key={`drawer-evidence-${idx}`}
+                          href={item.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/80 transition hover:border-white/20 hover:bg-white/10"
+                        >
+                          {item.label}
+                        </a>
+                      ))
+                    : Array.from({ length: 3 }).map((_, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          disabled
+                          className="inline-flex cursor-not-allowed items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 opacity-70"
+                        >
+                          <Skeleton className="h-3 w-24" />
+                        </button>
+                      ))}
                 </div>
               </section>
             </div>
@@ -396,10 +523,7 @@ export default function Page() {
     });
   }, [activeModule, activeTag, query]);
 
-  const selectedProject = useMemo(
-    () => projects.find((p) => p.id === selectedId) ?? null,
-    [selectedId]
-  );
+  const selectedProject = useMemo(() => projects.find((p) => p.id === selectedId) ?? null, [selectedId]);
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -412,22 +536,30 @@ export default function Page() {
         <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-7 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px]">
             <div>
-              <Skeleton className="h-3 w-24" />
-              <Skeleton className="mt-4 h-10 w-3/4" />
-              <Skeleton className="mt-3 h-3 w-full" />
-              <Skeleton className="mt-2 h-3 w-11/12" />
+              <p className="text-xs uppercase tracking-[0.18em] text-white/60">作品集</p>
+              <h1 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">
+                Vibe 编程 × AI 工作流工程
+              </h1>
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-white/75">
+                我擅长快速构建和排障真实系统：从轻量级全栈工具到可衡量、可复现、可迭代的 ML/AI 流程。本站采用证据优先模板（目标→流程→难点→结果→复现→链接），便于在面试中快速评估每个项目的工程能力。
+              </p>
             </div>
 
             <div className="flex flex-wrap content-start gap-2 lg:justify-end">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  className="inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-4 py-2"
-                >
-                  <Skeleton className="h-3 w-16" />
-                </a>
-              ))}
+              <a
+                href="https://github.com/Haibo114Luo"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
+              >
+                GitHub 主页 ↗
+              </a>
+              <a
+                href="#projects"
+                className="inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
+              >
+                项目列表 ↓
+              </a>
             </div>
           </div>
 
@@ -449,7 +581,7 @@ export default function Page() {
 
       <section className="mx-auto max-w-6xl px-6 pb-10">
         <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="text-sm font-medium uppercase tracking-[0.12em] text-white/70">Featured Projects</h2>
+          <h2 className="text-sm font-medium uppercase tracking-[0.12em] text-white/70">置顶项目</h2>
           <Skeleton className="h-3 w-24" />
         </div>
 
@@ -464,25 +596,25 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-16">
+      <section id="projects" className="mx-auto max-w-6xl px-6 pb-16">
         <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
           <div className="flex flex-col gap-4">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs text-white/50">Module</span>
+              <span className="text-xs text-white/50">模块</span>
               <PillButton active={activeModule === "All"} onClick={() => setActiveModule("All")}>
-                All
+                全部
               </PillButton>
               {moduleUniverse.map((m) => (
                 <PillButton key={m} active={activeModule === m} onClick={() => setActiveModule(m)}>
-                  {m}
+                  {MODULE_LABELS[m]}
                 </PillButton>
               ))}
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs text-white/50">Tag</span>
+              <span className="text-xs text-white/50">标签</span>
               <PillButton active={activeTag === "All"} onClick={() => setActiveTag("All")}>
-                All
+                全部
               </PillButton>
               {tagUniverse.map((t) => (
                 <PillButton key={t} active={activeTag === t} onClick={() => setActiveTag(t)}>
@@ -493,7 +625,7 @@ export default function Page() {
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <label className="w-full sm:max-w-sm">
-                <span className="mb-1 block text-xs text-white/50">Search</span>
+                <span className="mb-1 block text-xs text-white/50">搜索</span>
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
@@ -512,16 +644,16 @@ export default function Page() {
                 }}
                 className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/70 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
               >
-                Reset filters
+                重置筛选
               </button>
             </div>
           </div>
         </div>
 
         <div className="mb-4 mt-5 flex items-center justify-between">
-          <h2 className="text-sm font-medium uppercase tracking-[0.12em] text-white/70">All Projects</h2>
+          <h2 className="text-sm font-medium uppercase tracking-[0.12em] text-white/70">全部项目</h2>
           <p className="text-sm text-white/60">
-            Showing <span className="text-white">{filtered.length}</span> projects
+            当前显示 <span className="text-white">{filtered.length}</span> 个项目
           </p>
         </div>
 
@@ -543,3 +675,4 @@ export default function Page() {
     </main>
   );
 }
+
