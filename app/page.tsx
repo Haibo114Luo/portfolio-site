@@ -538,10 +538,10 @@ export default function Page() {
             <div>
               <p className="text-xs uppercase tracking-[0.18em] text-white/60">作品集</p>
               <h1 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">
-                Vibe 编程 × AI 工作流工程
+                Vibe Coding × AI Diffusion
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-white/75">
-                我擅长快速构建和排障真实系统：从轻量级全栈工具到可衡量、可复现、可迭代的 ML/AI 流程。本站采用证据优先模板（目标→流程→难点→结果→复现→链接），便于在面试中快速评估每个项目的工程能力。
+                我想尝试的岗位通常要求两种核心能力：一是 vibe coding——在不确定需求下快速把系统做出来并完成排障；二是 AI diffusion——把模型能力嵌入日常工作流，用结构化输出、质检与可复现产物把效率扩散到团队。置顶项目对应这两条能力线：研报整理流水线（本地 ML 部署 + prompt/schema + 自动化入库）与德州扑克记牌器（需求迭代 + 全栈状态/端口对接）。
               </p>
             </div>
 
