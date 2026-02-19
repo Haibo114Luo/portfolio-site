@@ -121,8 +121,8 @@ export const projects: Project[] = [
     evidence: [
       { label: "GitHub 仓库", href: "https://github.com/Haibo114Luo/AIDC-calculator" },
       {
-        label: "主 HTML",
-        href: "https://github.com/Haibo114Luo/AIDC-calculator/blob/main/%E7%AE%97%E5%8A%9B%E8%AE%A1%E7%AE%97v6_fixed.html"
+        label: "主 HTML （已经利用vercel部署）",
+        href: "https://ai-datacenter-calculator-2026.vercel.app/"
       },
       {
         label: "场景台账（CSV）",
@@ -159,7 +159,7 @@ export const projects: Project[] = [
         "CSV 示例场景展示如何用 MW 约束校验营销口径。"
       ],
       repro: [
-        "在浏览器打开 HTML（或作为静态页面托管）。",
+        "点击打开 HTML（或点击我已经部署好的网址）。",
         "调整参数并点击 Calculate。",
         "将 CSV 场景行粘贴到参数输入框，执行计算复现结果。",
         "把导出的表头+行回写到 CSV 台账，做长期对比。"
